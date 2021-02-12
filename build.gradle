@@ -1,0 +1,45 @@
+plugins {
+    id 'java'
+    id 'antlr'
+}
+
+group = 'com.zz.dsl.graalvm'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly 'org.projectlombok:lombok:1.18.16'
+    annotationProcessor 'org.projectlombok:lombok:1.18.16'
+
+    antlr "org.antlr:antlr4:4.9.1"
+
+    compile group: 'org.graalvm.truffle', name: 'truffle-api', version: '21.0.0'
+    compile group: 'org.graalvm.truffle', name: 'truffle-tck', version: '21.0.0'
+
+    // !!!
+    annotationProcessor group: 'org.graalvm.truffle', name: 'truffle-dsl-processor', version: '21.0.0'
+}
+
+generateGrammarSource {
+    maxHeapSize = "64m"
+    arguments += ["-no-listener", "-visitor", "-long-messages"]
+}
+
+// for ide like Intellij to know generated source
+sourceSets {
+    main.java.srcDirs += "${project.buildDir}/generated-src/antlr/main"
+}
+
+test {
+    useJUnitPlatform()
+}
